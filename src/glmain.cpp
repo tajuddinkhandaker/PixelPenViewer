@@ -1,11 +1,5 @@
 #include <iostream>
 #include <stdio.h>
-// How to use glad directly from CMAKE
-// https://github.com/Dav1dde/glad/issues/186
-// Also, https://github.com/Dav1dde/glad/issues/174
-#include <glad/glad.h>
-// GLFW
-#include <GLFW/glfw3.h>
 
 // Business Library Headers
 #include "Renderer.h"
@@ -21,7 +15,6 @@ using namespace std;
 // 2. Execute "cmake .."
 // 3. Execute "make"
 // 4. Execute "./glRendering"
-
 
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -63,6 +56,10 @@ int main(int argc, char **argv)
     // Define the viewport dimensions
     glViewport(0, 0, WIDTH, HEIGHT);
 
+    Rendering::Renderer renderer;
+
+    renderer.Update();
+
     // Game loop
     while (!glfwWindowShouldClose(window))
     {
@@ -72,11 +69,18 @@ int main(int argc, char **argv)
         // Render
         // Clear the colorbuffer
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        // glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        
         glClear(GL_COLOR_BUFFER_BIT);
 
+        renderer.Render();
+ 
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // Swap the screen buffers
         glfwSwapBuffers(window);
     }
+
+    renderer.Clean();
 
     // Terminates GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
