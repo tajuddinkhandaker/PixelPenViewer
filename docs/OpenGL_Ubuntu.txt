@@ -1,0 +1,78 @@
+
+# OpenGL installtaion
+
+1. Check OpnGL version
+
+> glxinfo | grep "OpenGL version"
+
+	glxinfo | grep "OpenGL version"
+
+	Command 'glxinfo' not found, but can be installed with:
+
+	sudo apt install mesa-utils
+2. Install mesa-utils
+
+> sudo apt install mesa-utils
+
+3. Check OpnGL version again.
+
+> glxinfo | grep "OpenGL version"
+
+OpenGL version string: 3.0 Mesa 19.0.8
+
+4. You may have better luck with modern OpenGL just grepping for "version" instead of "OpenGL version" given the differences between the core and compat profiles, as well as the various GLSL and GLES versions:
+
+> glxinfo | grep 'version'
+server glx version string: 1.4
+client glx version string: 1.4
+GLX version: 1.4
+    Max core profile version: 3.3
+    Max compat profile version: 3.0
+    Max GLES1 profile version: 1.1
+    Max GLES[23] profile version: 3.0
+OpenGL core profile version string: 3.3 (Core Profile) Mesa 19.0.8
+OpenGL core profile shading language version string: 3.30
+OpenGL version string: 3.0 Mesa 19.0.8
+OpenGL shading language version string: 1.30
+OpenGL ES profile version string: OpenGL ES 3.0 Mesa 19.0.8
+OpenGL ES profile shading language version string: OpenGL ES GLSL ES 3.00
+
+
+5. Also ...
+
+> glxinfo | grep -i opengl
+OpenGL vendor string: Intel Open Source Technology Center
+OpenGL renderer string: Mesa DRI Intel(R) Sandybridge Mobile x86/MMX/SSE2
+OpenGL core profile version string: 3.3 (Core Profile) Mesa 19.0.8
+OpenGL core profile shading language version string: 3.30
+OpenGL core profile context flags: (none)
+OpenGL core profile profile mask: core profile
+OpenGL core profile extensions:
+OpenGL version string: 3.0 Mesa 19.0.8
+OpenGL shading language version string: 1.30
+OpenGL context flags: (none)
+OpenGL extensions:
+OpenGL ES profile version string: OpenGL ES 3.0 Mesa 19.0.8
+OpenGL ES profile shading language version string: OpenGL ES GLSL ES 3.00
+OpenGL ES profile extensions:
+
+6. Also ...
+
+> DISPLAY=:0 glxgears -info | grep GL_VERSION
+GL_VERSION    = 3.0 Mesa 19.0.8
+
+7. https://stackoverflow.com/questions/859501/learning-opengl-in-ubuntu
+
+8. Compiler command
+
+> g++ -lglut -lGL -lGLU -lGLEW glmain.cpp -o glmain
+
+9. Installing glfw on Ubuntu 18.04 LTS
+
+> sudo apt-get install libglfw3-dev libglfw3
+
+
+
+
+
+

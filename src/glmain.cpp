@@ -17,11 +17,13 @@ using namespace PixelPen::Views;
 
 int main(int argc, char **argv)
 {
-    NativeView nativeView;
+    NativeView* nativeView = new NativeView();
 
-    if (!nativeView.Create("PixelPen Viewer in OpenGL", 800, 600))
-    {
+    if (!nativeView->Create("PixelPen Viewer in OpenGL", 800, 600)) {
         return -1;
     }
+    nativeView->show();
+    delete nativeView;
+    nativeView = nullptr;
     return 0;
 }

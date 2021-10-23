@@ -17,6 +17,7 @@ namespace PixelPen::Rendering
         }
 
         void ClearColorBuffer();
+        void SetViewport(int x, int y, size_t width, size_t height);
         
     private: 
         void Draw(); 

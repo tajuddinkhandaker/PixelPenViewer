@@ -11,26 +11,28 @@ namespace
     // Is called whenever a key is pressed/released via GLFW
     void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
     {
-        std::cout << key << std::endl;
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        std::cout << "[I] Key Code => " << key << std::endl;
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, GL_TRUE);
+        }
     }
 }
     
 NativeView::NativeView(/* args */)
 {
+    std::cout << "[O] NativeView allocated" << std::endl;
     Initialize();
 }
 
 NativeView::~NativeView()
 {
-    // Terminates GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
+    std::cout << "[O] NativeView destroyed" << std::endl;
 }
 
 void NativeView::Initialize()
 {
-    std::cout << "Starting GLFW context" << std::endl;
+    std::cout << "[I] Starting GLFW context" << std::endl;
     // Init GLFW
     glfwInit();
     // Set all the required options for GLFW
@@ -40,48 +42,79 @@ void NativeView::Initialize()
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 }
 
+/**
+ * @brief Create a view window name to a given window size
+ * 
+ * @param name 
+ * @param width 
+ * @param height 
+ * @return true 
+ * @return false 
+ */
 bool NativeView::Create(const std::string& name, uint32_t width, uint32_t height)
 {
     // Create a GLFWwindow object that we can use for GLFW's functions
-    GLFWwindow* window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
-    glfwMakeContextCurrent(window);
-    if (window == nullptr)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
+    window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
+    if (window == nullptr) {
+        std::cout << "[X] Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return false;
     }
+    glfwMakeContextCurrent(window);
 
     // Set the required callback functions
     glfwSetKeyCallback(window, key_callback);
 
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize OpenGL context" << std::endl;
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+        std::cout << "[X] Failed to initialize OpenGL context" << std::endl;
+        glfwTerminate();
         return false;
     }
-    printf("OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
+    printf("[I] OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
 
-    // Define the viewport dimensions
-    glViewport(0, 0, width, height);
+    renderer = new Renderer();
+    if (renderer == nullptr) {
+        std::cout << "[X] Memory allocation failed for renderer" << std::endl;
+        glfwTerminate();
+        return false;
+    }
+    renderer->SetViewport(0, 0, width, height);
+    return true;
+}
 
-    Renderer renderer;
-
+/**
+ * @brief Renders the window frames
+ * 
+ */
+void NativeView::show()
+{
     // Game loop
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         // Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions
         glfwPollEvents();
 
-        renderer.Update();
-        // Render
-        renderer.ClearColorBuffer();
-        renderer.Render();
+        OnFrameRender(window, renderer);
  
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // Swap the screen buffers
         glfwSwapBuffers(window);
     }
+    std::cout << "[O] glfwTerminate()" << std::endl;
+    delete renderer;
+    renderer = nullptr;
+    std::cout << "[O] renderer freed" << std::endl;
+}
 
-    return true;
+/**
+ * @brief A callback on each frame is rendered
+ * 
+ * @param window GLFW
+ * @param renderer 
+ */
+void NativeView::OnFrameRender(const GLFWwindow* const /*window*/, PixelPen::Rendering::Renderer* const renderer)
+{
+    renderer->Update();
+    // Render
+    renderer->ClearColorBuffer();
+    renderer->Render();
 }
