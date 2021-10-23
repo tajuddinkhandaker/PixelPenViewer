@@ -51,10 +51,10 @@ void NativeView::Initialize()
  * @return true 
  * @return false 
  */
-bool NativeView::Create(const std::string& name, uint32_t width, uint32_t height)
+bool NativeView::Create(const std::string& name, int width, int height)
 {
     // Create a GLFWwindow object that we can use for GLFW's functions
-    window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
+    window = glfwCreateWindow(width, height, name.c_str(), monitor, share);
     if (window == nullptr) {
         std::cout << "[X] Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -100,9 +100,21 @@ void NativeView::show()
         glfwSwapBuffers(window);
     }
     std::cout << "[O] glfwTerminate()" << std::endl;
-    delete renderer;
-    renderer = nullptr;
-    std::cout << "[O] renderer freed" << std::endl;
+    if (renderer != nullptr) {
+        delete renderer;
+        renderer = nullptr;
+        std::cout << "[O] renderer freed" << std::endl;
+    }
+    if (monitor != nullptr) {
+        free(monitor);
+        monitor = nullptr;
+        std::cout << "[O] monitor freed" << std::endl;
+    }
+    if (share != nullptr) {
+        free(share);
+        share = nullptr;
+        std::cout << "[O] share freed" << std::endl;
+    }
 }
 
 /**

@@ -10,7 +10,7 @@ namespace PixelPen::Views
         virtual ~IView() = default;
         DEF_NO_COPY(IView);
 
-        virtual bool Create(const std::string& name, uint32_t width, uint32_t height) = 0;
+        virtual bool Create(const std::string& name, int width, int height) = 0;
         virtual void show() = 0;
     };
 }

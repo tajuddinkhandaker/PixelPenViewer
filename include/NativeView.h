@@ -15,7 +15,7 @@ namespace PixelPen::Views
         NativeView();
         virtual ~NativeView() override;
 
-        virtual bool Create(const std::string& name, uint32_t width, uint32_t height) override;
+        virtual bool Create(const std::string& name, int width, int height) override;
         virtual void show() override;
 
     private:
@@ -24,6 +24,8 @@ namespace PixelPen::Views
 
     private:
         GLFWwindow* window = nullptr;
+        GLFWmonitor* monitor = nullptr;
+        GLFWwindow* share = nullptr;
         PixelPen::Rendering::Renderer* renderer = nullptr;
     };
 }
