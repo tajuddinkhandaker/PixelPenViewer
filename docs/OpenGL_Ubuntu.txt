@@ -1,5 +1,5 @@
 
-# OpenGL installtaion
+# OpenGL installation
 
 1. Check OpnGL version
 
