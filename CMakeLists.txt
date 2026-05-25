@@ -26,6 +26,12 @@ add_executable(glRendering src/glmain.cpp ${SOURCES})
 
 find_package(OpenGL REQUIRED)
 
+if(TARGET OpenGL::GL)
+  message(STATUS "OpenGL::GL target exists ✔")
+else()
+  message(FATAL_ERROR "OpenGL::GL target missing ❌")
+endif()
+
 # https://github.com/Dav1dde/glad/issues/174
 add_subdirectory(vendor)
 target_link_libraries(glRendering
@@ -35,5 +41,13 @@ target_link_libraries(glRendering
   PRIVATE
   ${CMAKE_DL_LIBS})
 
-find_package(glfw3 CONFIG REQUIRED)
+# Uncomment if you find this package System-installed GLFW Installed via vcpkg / apt / brew:
+# When we fetch GLFW using FetchContent_Declare() the following doesn't require
+# find_package(glfw3 CONFIG REQUIRED)
+
+# to check memory leaks
+target_compile_definitions(glRendering PRIVATE
+    $<$<CONFIG:Debug>:_CRTDBG_MAP_ALLOC>
+)
+
 target_link_libraries(glRendering PRIVATE glfw)

@@ -6,8 +6,8 @@
 #include <string>
 #include <stdio.h>  /* defines FILENAME_MAX */
 
-// #define WINDOWS  /* uncomment this line to use it for windows.*/
-#ifdef WINDOWS
+
+#if defined(_WIN32) || defined(_WIN64)
 #include <direct.h>
 #define GetCurrentDir _getcwd
 #else
