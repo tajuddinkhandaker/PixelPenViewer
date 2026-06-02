@@ -22,9 +22,12 @@ namespace PixelPen::Rendering
     private: 
         void Draw(); 
         void BuildShaderProgram();
+        void UpdateRotationToEdgeTransformUniform(GLint transformLoc);
+        void UpdateRotationToCenterTransformUniform(GLint transformLoc);
 
         unsigned int VBO, VAO;
         int shaderProgram = 0;
+        int transformLoc = 0;
     };
 }
 

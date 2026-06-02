@@ -19,13 +19,16 @@ int main(int argc, char **argv)
 {
     NativeView* nativeView = new NativeView();
 
-    const char* windowTitle = "PixelPen Viewer in OpenGL";
+    const char* const windowTitle = "PixelPen Viewer in OpenGL";
 
     if (!nativeView->Create(windowTitle, 800, 600)) {
         return -1;
     }
+
     nativeView->show();
+
     delete nativeView;
     nativeView = nullptr;
+
     return 0;
 }
