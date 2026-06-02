@@ -17,12 +17,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # https://stackoverflow.com/questions/13703647/how-to-properly-add-include-directories-with-cmake
 
 include_directories(include)
+if(WIN32)
+  include_directories("${CMAKE_SOURCE_DIR}/res")
+endif()
 file(GLOB_RECURSE SOURCES "include/*.h" "src/*.cpp")
 
 # For exporting as library
 # https://pabloariasal.github.io/2018/02/19/its-time-to-do-cmake-right/
  
-add_executable(glRendering src/glmain.cpp ${SOURCES}) 
+add_executable(glRendering src/glmain.cpp ${SOURCES})
+if(WIN32)
+  target_sources(glRendering PRIVATE res/resource.rc)
+endif()
 
 find_package(OpenGL REQUIRED)
 

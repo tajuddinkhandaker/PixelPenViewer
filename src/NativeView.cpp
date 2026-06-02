@@ -2,6 +2,13 @@
 #include "Renderer.h"
 #include "NativeView.h"
 
+#if defined(_WIN32)
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#include <windows.h>
+#include "resource.h"
+#endif
+
 using namespace PixelPen;
 using namespace Views;
 using namespace Rendering;
@@ -60,6 +67,25 @@ bool NativeView::Create(const std::string& name, int width, int height)
         glfwTerminate();
         return false;
     }
+
+    // Set the window icon and app tray icon on Windows
+#if defined(_WIN32)
+    constexpr int ICON_SMALL_SIZE = 16;
+    constexpr int ICON_BIG_SIZE = 32;
+    HWND hwnd = glfwGetWin32Window(window);
+    if (hwnd != nullptr) {
+        HMODULE hModule = GetModuleHandle(NULL);
+        HICON hIconSmall = reinterpret_cast<HICON>(LoadImage(hModule, MAKEINTRESOURCE(IDI_APP_ICON), IMAGE_ICON, ICON_SMALL_SIZE, ICON_SMALL_SIZE, LR_DEFAULTCOLOR));
+        HICON hIconBig   = reinterpret_cast<HICON>(LoadImage(hModule, MAKEINTRESOURCE(IDI_APP_ICON), IMAGE_ICON, ICON_BIG_SIZE, ICON_BIG_SIZE, LR_DEFAULTCOLOR));
+        if (hIconSmall != nullptr) {
+            SendMessage(hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIconSmall));
+        }
+        if (hIconBig != nullptr) {
+            SendMessage(hwnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIconBig));
+        }
+    }
+#endif
+
     glfwMakeContextCurrent(window);
 
     // Set the required callback functions
