@@ -1,5 +1,7 @@
 #include "vendors.h"
 #include "ShaderReader.h"
+#include <filesystem>
+#include <iostream>
 
 // #define DEBUG
 
@@ -32,22 +34,50 @@ ShaderReader::ShaderReader(const std::string& srcFileName)
 void ShaderReader::Read()
 {
     #ifdef DEBUG
-    std::cout << "Current working directory: " << GetCurrentWorkingDir() << std::endl;
+    std::cout << "[I] Current working directory: " << GetCurrentWorkingDir() << std::endl;
     #endif
-    std::ifstream stream(GetCurrentWorkingDir() + "/../res/" + m_srcFileName);
 
-    if (stream.is_open())
+    const std::filesystem::path cwd = std::filesystem::current_path();
+    const std::filesystem::path candidates[] = {
+        cwd / "res" / m_srcFileName,
+        cwd.parent_path() / "res" / m_srcFileName,
+        cwd.parent_path().parent_path() / "res" / m_srcFileName,
+        cwd / ".." / "res" / m_srcFileName
+    };
+
+    std::ifstream stream;
+    for (const auto& path : candidates)
     {
-        m_content.clear();
-
-        std::string line;
-        while (!stream.eof())
+        stream.open(path, std::ios::in);
+        if (stream.is_open())
         {
-            std::getline(stream, line);
-            m_content += line + "\n";
+            #ifdef DEBUG
+            std::cout << "Loaded shader from: " << path.string() << std::endl;
+            #endif
+            break;
         }
-        m_content += "\0";
-
-        stream.close();
+        stream.clear();
     }
+
+    if (!stream.is_open())
+    {
+        std::cerr << "ERROR: Could not open shader file '" << m_srcFileName << "'." << std::endl;
+        std::cerr << "Tried paths:" << std::endl;
+        for (const auto& path : candidates)
+        {
+            std::cerr << "  " << path.string() << std::endl;
+        }
+        return;
+    }
+
+    m_content.clear();
+
+    std::string line;
+    while (!stream.eof() && std::getline(stream, line))
+    {
+        m_content += line + "\n";
+    }
+    m_content += "\0";
+
+    stream.close();
 }

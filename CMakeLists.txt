@@ -5,7 +5,7 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
       CACHE STRING "")
 endif()
 
-project(glRendering VERSION 1.0.0 LANGUAGES CXX)
+project(glRendering VERSION 1.0.1 LANGUAGES CXX)
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
