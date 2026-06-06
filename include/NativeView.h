@@ -20,7 +20,7 @@ namespace PixelPen::Views
 
     private:
         void OnFrameRender(const GLFWwindow* const window, PixelPen::Rendering::Renderer* const renderer);
-        void Initialize();
+        void Initialize() const;
 
     private:
         GLFWwindow* window = nullptr;
