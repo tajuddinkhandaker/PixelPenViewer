@@ -37,7 +37,7 @@ NativeView::~NativeView()
     std::cout << "[O] NativeView destroyed" << std::endl;
 }
 
-void NativeView::Initialize()
+void NativeView::Initialize() const
 {
     std::cout << "[I] Starting GLFW context" << std::endl;
     // Init GLFW
