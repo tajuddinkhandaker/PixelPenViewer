@@ -15,9 +15,9 @@ using namespace PixelPen::Views;
 // 3. Execute "make"
 // 4. Execute "./glRendering"
 
-int main(int argc, char **argv)
+int main(int /*argc*/, char **/*argv*/)
 {
-    NativeView* nativeView = new NativeView();
+    IView* nativeView = new NativeView();
 
     const char* const windowTitle = "PixelPen Viewer in OpenGL";
 
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 
     nativeView->show();
 
-    delete nativeView;
+    free(nativeView);
     nativeView = nullptr;
 
     return 0;

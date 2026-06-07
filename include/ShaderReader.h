@@ -6,15 +6,10 @@ namespace PixelPen::Rendering::Shaders
     class ShaderReader
     {
         public:
-            ShaderReader(const std::string& srcFileName);
+            ShaderReader() = default;
             ~ShaderReader() = default;
 
-            void Read();
-            const GLchar* GetContent() const { return m_content.c_str(); }
-
-        private:
-            std::string m_srcFileName;
-            std::string m_content;
+            std::string Read(const std::string& srcFileName) const;
     };
 }
 

@@ -1,6 +1,8 @@
 #ifndef VENDORS_H
 #define VENDORS_H
 
+#include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <string>
@@ -18,8 +20,6 @@
 #define DEF_NO_COPY(TClass) \
     TClass (const TClass&) = delete; \
     TClass& operator= (const TClass&) = delete;
-
-#include<iostream>
 
 // How to use glad directly from CMAKE
 // https://github.com/Dav1dde/glad/issues/186

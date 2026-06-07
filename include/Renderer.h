@@ -9,19 +9,19 @@ namespace PixelPen::Rendering
         Renderer(/* args */);
         ~Renderer();
 
-        virtual void Update() {
-            BuildShaderProgram();
+        virtual bool initialize() {
+            return BuildShaderProgram();
         }
         virtual void Render() {
             Draw();
         }
 
-        void ClearColorBuffer();
-        void SetViewport(int x, int y, size_t width, size_t height);
+        void ClearColorBuffer() const;
+        void SetViewport(int x, int y, size_t width, size_t height) const;
         
     private: 
         void Draw(); 
-        void BuildShaderProgram();
+        bool BuildShaderProgram();
         void UpdateRotationToEdgeTransformUniform(GLint transformLoc);
         void UpdateRotationToCenterTransformUniform(GLint transformLoc);
 

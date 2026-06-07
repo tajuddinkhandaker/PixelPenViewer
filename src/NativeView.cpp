@@ -16,7 +16,7 @@ using namespace Rendering;
 namespace
 {
     // Is called whenever a key is pressed/released via GLFW
-    void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+    void key_callback(GLFWwindow* const window, int key, int /*scancode*/, int action, int /*mode*/)
     {
         std::cout << "[I] Key Code => " << key << std::endl;
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
@@ -33,7 +33,30 @@ NativeView::NativeView(/* args */)
 
 NativeView::~NativeView()
 {
+    if (renderer != nullptr) {
+        free(renderer);
+        renderer = nullptr;
+        std::cout << "[O] renderer freed" << std::endl;
+    }
+    if (monitor != nullptr) {
+        free(monitor);
+        monitor = nullptr;
+        std::cout << "[O] monitor freed" << std::endl;
+    }
+    if (share != nullptr) {
+        free(share);
+        share = nullptr;
+        std::cout << "[O] share freed" << std::endl;
+    }
+    if (window != nullptr) {
+        glfwDestroyWindow(window);
+        window = nullptr;
+        std::cout << "[O] window destroyed" << std::endl;
+    }
+    std::cout << "[O] glfwTerminate()" << std::endl;
+
     glfwTerminate();
+
     std::cout << "[O] NativeView destroyed" << std::endl;
 }
 
@@ -41,7 +64,10 @@ void NativeView::Initialize() const
 {
     std::cout << "[I] Starting GLFW context" << std::endl;
     // Init GLFW
-    glfwInit();
+    if (glfwInit() == GLFW_FALSE) {
+        std::cerr << "Failed to initialize GLFW" << std::endl;
+        return;
+    }
     // Set all the required options for GLFW
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -92,19 +118,20 @@ bool NativeView::Create(const std::string& name, int width, int height)
     glfwSetKeyCallback(window, key_callback);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        std::cout << "[X] Failed to initialize OpenGL context" << std::endl;
+        std::cerr << "[X] Failed to initialize OpenGL context" << std::endl;
         glfwTerminate();
         return false;
     }
     printf("[I] OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
 
+    renderer->SetViewport(0, 0, width, height);
+
     renderer = new Renderer();
-    if (renderer == nullptr) {
-        std::cout << "[X] Memory allocation failed for renderer" << std::endl;
+    if (renderer == nullptr || !renderer->initialize()) {
+        std::cerr << "[X] Memory allocation failed for renderer" << std::endl;
         glfwTerminate();
         return false;
     }
-    renderer->SetViewport(0, 0, width, height);
     return true;
 }
 
@@ -127,7 +154,7 @@ void NativeView::show()
     }
     std::cout << "[O] glfwTerminate()" << std::endl;
     if (renderer != nullptr) {
-        delete renderer;
+        free(renderer);
         renderer = nullptr;
         std::cout << "[O] renderer freed" << std::endl;
     }
@@ -151,8 +178,6 @@ void NativeView::show()
  */
 void NativeView::OnFrameRender(const GLFWwindow* const /*window*/, PixelPen::Rendering::Renderer* const renderer)
 {
-    renderer->Update();
-    // Render
     renderer->ClearColorBuffer();
     renderer->Render();
 }
