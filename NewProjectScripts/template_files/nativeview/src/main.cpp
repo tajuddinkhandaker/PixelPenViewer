@@ -1,15 +1,34 @@
+#include "vendors.h"
+
+// Business Library Headers
 #include "NativeView.h"
-#include <iostream>
 
-int main()
+using namespace PixelPen::Views;
+
+// This example is taken from https://learnopengl.com/
+// https://learnopengl.com/code_viewer.php?code=getting-started/hellowindow2
+// The code originally used GLEW, I replaced it with Glad
+
+// Compile:
+// 1. Go to root build/
+// 2. Execute "cmake .."
+// 3. Execute "make"
+// 4. Execute "./glRendering"
+
+int main(int /*argc*/, char **/*argv*/)
 {
-    PixelPen::Views::NativeView view;
+    IView* nativeView = new NativeView();
 
-    if (!view.Create("OpenGL NativeView Window", 800, 600)) {
-        std::cerr << "Failed to create window" << std::endl;
+    const char* const windowTitle = "PixelPen Viewer in OpenGL";
+
+    if (!nativeView->Create(windowTitle, 800, 600)) {
         return -1;
     }
 
-    view.show();
+    nativeView->show();
+
+    free(nativeView);
+    nativeView = nullptr;
+
     return 0;
 }

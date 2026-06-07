@@ -1,12 +1,6 @@
 #ifndef NATIVE_VIEW_H
 #define NATIVE_VIEW_H
 
-#include "IView.h"
-#include <string>
-
-struct GLFWwindow;
-struct GLFWmonitor;
-
 namespace PixelPen::Rendering
 {
     class Renderer;
@@ -14,7 +8,8 @@ namespace PixelPen::Rendering
 
 namespace PixelPen::Views
 {
-    class NativeView : public IView
+    class NativeView
+        : public PixelPen::Views::IView
     {
     public:
         NativeView();
@@ -23,7 +18,7 @@ namespace PixelPen::Views
         virtual void show() override;
 
     private:
-        void OnFrameRender(const GLFWwindow* const window, PixelPen::Rendering::Renderer* const renderer);
+        void OnFrameRender(const GLFWwindow* const  /*window*/, PixelPen::Rendering::Renderer* const rendererPtr) const;
         void Initialize() const;
 
     private:
