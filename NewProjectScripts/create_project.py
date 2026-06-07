@@ -38,7 +38,6 @@ class ProjectTemplate:
             self.project_root / 'src',
             self.project_root / 'include',
             self.project_root / 'res',
-            self.project_root / 'build',
         ]:
             directory.mkdir(parents=True, exist_ok=True)
 

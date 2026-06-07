@@ -1,16 +1,15 @@
 #ifndef SHADER_READER_H
 #define SHADER_READER_H
 
-#include <string>
-
-namespace PixelPen::Rendering
+namespace PixelPen::Rendering::Shaders
 {
     class ShaderReader
     {
-    public:
-        ShaderReader() = default;
-        ~ShaderReader() = default;
-        std::string Read(const std::string& filepath);
+        public:
+            ShaderReader() = default;
+            ~ShaderReader() = default;
+
+            std::string Read(const std::string& srcFileName) const;
     };
 }
 
