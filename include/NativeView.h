@@ -19,7 +19,7 @@ namespace PixelPen::Views
         virtual void show() override;
 
     private:
-        void OnFrameRender(const GLFWwindow* const window, PixelPen::Rendering::Renderer* const renderer);
+        void OnFrameRender(const GLFWwindow* const /*window*/, PixelPen::Rendering::Renderer* const renderer);
         void Initialize() const;
 
     private:

@@ -45,6 +45,7 @@ namespace
  * 
  */
 Renderer::Renderer(/* args */)
+    : VAO(0), VBO(0), shaderProgram(0) 
 {
 }
 
@@ -56,8 +57,9 @@ Renderer::~Renderer()
 {
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    if (VAO) glDeleteVertexArrays(1, &VAO);
+    if (VBO) glDeleteBuffers(1, &VBO);
+    if (shaderProgram) glDeleteProgram(shaderProgram);
 }
 
 /**
@@ -65,7 +67,7 @@ Renderer::~Renderer()
  * 
  *  //https://learnopengl.com/Getting-started/Hello-Triangle
  */
-void Renderer::BuildShaderProgram()
+bool Renderer::BuildShaderProgram()
 {
     // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-10-transparency/
     // Enable blending
@@ -74,9 +76,15 @@ void Renderer::BuildShaderProgram()
 
     // BasicRotateVS.glsl -> apply rotation transformation to the vertex shader
     // BasicVS.glsl -> no transformation applied to the vertex shader
-    ShaderReader vertShader("BasicRotateVS.glsl");
-    vertShader.Read();
-    const auto vertexShaderSrc = vertShader.GetContent();
+    
+    ShaderReader shaderReader;
+    std::string vertexSource = shaderReader.Read("BasicRotateVS.glsl");
+    std::string fragmentSource = shaderReader.Read("BasicFS.glsl");
+
+    if (vertexSource.empty() || fragmentSource.empty()) {
+        std::cerr << "Failed to load shaders" << std::endl;
+        return false;
+    }
 
     // std::cout << vertexShaderSrc << std::endl;
 
@@ -89,28 +97,27 @@ void Renderer::BuildShaderProgram()
     // glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 
     // load shader source code from file
-    glShaderSource(vertexShader, 1, &vertexShaderSrc, nullptr);
+    const char* vSrc = vertexSource.c_str();
+    glShaderSource(vertexShader, 1, &vSrc, nullptr);
     glCompileShader(vertexShader);
 
     // check for shader compile errors
     int success;
-    char infoLog[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success)
     {
+        char infoLog[512];
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
                   << infoLog << std::endl;
+        return false;
     }
     // fragment shader
     int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-    ShaderReader fragShader("BasicFS.glsl");
-    fragShader.Read();
-    const auto fragmentShaderSrc = fragShader.GetContent();
-
     // load shader source code from file
-    glShaderSource(fragmentShader, 1, &fragmentShaderSrc, nullptr); 
+    const char* fSrc = fragmentSource.c_str();
+    glShaderSource(fragmentShader, 1, &fSrc, nullptr); 
     
     // load shader source code from text memory
     // glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
@@ -121,9 +128,11 @@ void Renderer::BuildShaderProgram()
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success)
     {
+        char infoLog[512];
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
                   << infoLog << std::endl;
+        return false;
     }
     // link shaders
     shaderProgram = glCreateProgram();
@@ -137,14 +146,21 @@ void Renderer::BuildShaderProgram()
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success)
     {
+        char infoLog[512];
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n"
                   << infoLog << std::endl;
+                  
+        if (shaderProgram) glDeleteProgram(shaderProgram);
+        return false;
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
     transformLoc = glGetUniformLocation(shaderProgram, "uTransform");
+    if (transformLoc < 0) {
+        std::cerr << "WARNING: Transform uniform 'uTransform' not found." << std::endl;
+    }
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -169,6 +185,7 @@ void Renderer::BuildShaderProgram()
 
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    return true;
 }
 
 /**
@@ -193,12 +210,13 @@ void Renderer::Draw()
  * @brief Clear renderer's color buffer
  * 
  */
-void Renderer::ClearColorBuffer()
+void Renderer::ClearColorBuffer() const
 {
     // Clear the colorbuffer
     glClearColor(0.5f, 0.1f, 0.5f, 1.0f);
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 /**
@@ -209,7 +227,7 @@ void Renderer::ClearColorBuffer()
  * @param width 
  * @param height 
  */
-void Renderer::SetViewport(int x, int y, size_t width, size_t height)
+void Renderer::SetViewport(int x, int y, size_t width, size_t height) const
 {
     // Define the viewport dimensions
     glViewport(x, y, width, height);
